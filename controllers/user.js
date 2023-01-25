@@ -50,13 +50,13 @@ exports.verifyUser = async (req, res) =>{
             }
         });
         if(user){
-            if(user.password === req.userPassword){
+            if(user.password === req.body.userPassword){
                 res.send('User Authenticated')
             }else{
-                res.send('Id or Password Not Valid')
+                res.status(401).send('User Not Authorized')
             }
         }else{
-            res.send('Email Not Registered');
+            res.status(404).send('User Not Found');
         }
     }
     catch(err){
