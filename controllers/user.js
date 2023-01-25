@@ -3,6 +3,14 @@ const User = require('../models/User');
 
 const rootDir = path.dirname(require.main.filename);
 
+exports.signupForm = (req, res) => {
+    res.sendFile(path.join(rootDir, 'views', 'signup.html'));
+}
+
+exports.loginForm = (req, res) => {
+    res.sendFile(path.join(rootDir, 'views', 'login.html'));
+}
+
 exports.createNewUser = async (req, res) => {
     try{
         User.create({
@@ -34,10 +42,25 @@ exports.checkUser = async (req, res) =>{
     }
 }
 
-exports.signupForm = (req, res) => {
-    res.sendFile(path.join(rootDir, 'views', 'signup.html'));
+exports.verifyUser = async (req, res) =>{
+    try{
+        const user = await User.findOne({
+            where : {
+                email : req.body.userEmail
+            }
+        });
+        if(user){
+            if(user.password === req.userPassword){
+                res.send('User Authenticated')
+            }else{
+                res.send('Id or Password Not Valid')
+            }
+        }else{
+            res.send('Email Not Registered');
+        }
+    }
+    catch(err){
+        console.error(err);
+    }
 }
 
-exports.loginForm = (req, res) => {
-    res.sendFile(path.join(rootDir, 'views', 'login.html'));
-}
