@@ -37,3 +37,7 @@ exports.checkUser = async (req, res) =>{
 exports.signupForm = (req, res) => {
     res.sendFile(path.join(rootDir, 'views', 'signup.html'));
 }
+
+exports.loginForm = (req, res) => {
+    res.sendFile(path.join(rootDir, 'views', 'login.html'));
+}

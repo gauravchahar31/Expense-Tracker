@@ -6,7 +6,7 @@ const userRoutes = require('./routes/user');
 const sequelize = require('./database/connection');
 
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(express.static('views'));
+app.use(express.static('views'));
 app.use('/user', userRoutes);
 
 
