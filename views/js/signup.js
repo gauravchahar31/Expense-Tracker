@@ -55,7 +55,6 @@ async function createUser(myform){
     }
 }
 
-
 // Data Validations //
 
 function showError(input, message) {

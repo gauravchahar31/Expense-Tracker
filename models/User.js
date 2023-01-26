@@ -20,6 +20,10 @@ const User = sequelize.define('User', {
     password : {
         type : Sequelize.STRING,
         allowNul : false
+    },
+    jwt : {
+        type: Sequelize.STRING,
+        allowNul : true
     }
 });
 
