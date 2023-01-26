@@ -19,7 +19,9 @@ exports.createNewUser = async (req, res) => {
             password: req.body.userPassword
         }).then(result => {
             res.send('User Created');
-        })
+        }).catch(err => {
+            res.send('Something went wrong!')
+        }); 
     }
     catch(err){
         console.error(err);
@@ -30,19 +32,21 @@ exports.checkUser = async (req, res) =>{
     try{
         if(await User.findOne({
             where : {
-                email : req.body.userEmail
+                email : req.params.userEmail
             }
         })){
-            return true;
+            res.send(true);
         }
-        return false;
+        else{
+            res.send(false);
+        }
     }
     catch(err){
         console.error(err);
     }
 }
 
-exports.verifyUser = async (req, res) =>{
+exports.authenicateUser = async (req, res) =>{
     try{
         const user = await User.findOne({
             where : {
@@ -53,10 +57,10 @@ exports.verifyUser = async (req, res) =>{
             if(user.password === req.body.userPassword){
                 res.send('User Authenticated')
             }else{
-                res.status(401).send('User Not Authorized')
+                res.status(401).send('Incorrect Email or Password')
             }
         }else{
-            res.status(404).send('User Not Found');
+            res.status(404).send(`Account Doesn't Exist`);
         }
     }
     catch(err){
