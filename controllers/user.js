@@ -1,5 +1,7 @@
 const path = require('path');
 const User = require('../models/User');
+const passwordEncryption = require('../util/encryptPassword');
+
 
 const rootDir = path.dirname(require.main.filename);
 
@@ -13,33 +15,26 @@ exports.loginForm = (req, res) => {
 
 exports.createNewUser = async (req, res) => {
     try{
-        User.create({
-            name: req.body.userName,
-            email: req.body.userEmail,
-            password: req.body.userPassword
-        }).then(result => {
-            res.send('User Created');
-        }).catch(err => {
-            res.send('Something went wrong!')
-        }); 
-    }
-    catch(err){
-        console.error(err);
-    }
-}
-
-exports.checkUser = async (req, res) =>{
-    try{
-        if(await User.findOne({
+        const user = await User.findOne({
             where : {
-                email : req.params.userEmail
+                email : req.body.userEmail
             }
-        })){
-            res.send(true);
+        });
+        if(!user){
+            req.body.userPassword = await passwordEncryption.encryptPassword(req.body.userPassword);
+            User.create({
+                name: req.body.userName,
+                email: req.body.userEmail,
+                password: req.body.userPassword
+            }).then(result => {
+                res.send('User Created');
+            }).catch(err => {
+                res.send('Something went wrong!')
+            }); 
+        }else{
+            res.send('Email ALready Exists!')
         }
-        else{
-            res.send(false);
-        }
+        
     }
     catch(err){
         console.error(err);
@@ -54,7 +49,7 @@ exports.authenicateUser = async (req, res) =>{
             }
         });
         if(user){
-            if(user.password === req.body.userPassword){
+            if(await passwordEncryption.decryptPassword(req.body.userPassword, user.password)){
                 res.send('User Authenticated')
             }else{
                 res.status(401).send('Incorrect Email or Password')
