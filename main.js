@@ -6,10 +6,12 @@ const app = express();
 const sequelize = require('./database/connection');
 const User = require('./models/User');
 const Expense = require('./models/Expense');
+const Order = require('./models/Order');
 
 const userRoutes = require('./routes/user');
 const homeRoutes = require('./routes/home');
 const expenseRoutes = require('./routes/expense');
+const purchaseRoutes = require('./routes/purchase');
 
 // app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -29,10 +31,14 @@ app.use(async (req, res, next) => {
 
 app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
+app.use('/purchase', purchaseRoutes);
 app.use(homeRoutes);
 
 Expense.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Expense);
+
+Order.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
+User.hasMany(Order);
 
 sequelize.sync();
 

@@ -1,5 +1,3 @@
-// let arrayOfLists = [];
-
 window.addEventListener('DOMContentLoaded', (event) => {
     axios.get('/expense/getExpense')
     .then(res => {
@@ -52,8 +50,6 @@ function editExpense(myForm, e){
     .catch(err => console.log(err));
 }
 
-
-
 function addExpenseToList(expense){
     const container = document.querySelector('ul');
     const newLi = document.createElement('li');
@@ -86,4 +82,25 @@ function addExpenseToList(expense){
         document.querySelector('#id').value = expense.id;
         document.querySelector('#editForm').setAttribute("onsubmit", `editExpense(this, event)`);
     });
+}
+
+//Paymnets
+
+async function razorpayPayment(){
+    try{
+        const response = await axios.get('/purchase/premiumSubscription');
+        console.lor(response);
+        const options = {
+            "key" : response.data.key_id,
+            "order_id" : response.data.order.id,
+            "handler" : async function (response){
+                await axios.post('/purchase/updateTransactionStatus', {
+                ordder_id : options.order_id,
+                payment_id : response.razorpay_payment_id
+            });
+            alert('Premium Member!!');
+        }
+    }}catch(err){
+        console.log(err);
+    }
 }
