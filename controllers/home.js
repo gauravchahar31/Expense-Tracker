@@ -1,10 +1,12 @@
 const path = require('path');
 const rootDir = path.dirname(require.main.filename);
 
-exports.homePage = (req, res) => {
+const User = require('../models/User');
+
+exports.homePage = async (req, res) => {
    try{ 
-        if(req.cookies.user){
-            res.sendFile(rootDir, 'views', 'home.html');
+        if(req.user){
+            res.sendFile(path.join(rootDir, 'views', 'home.html'));
         }
         else{
             res.redirect('/user/login');

@@ -22,6 +22,7 @@ async function authenticateUser(email, password){
         await axios.post('/user/login', {userEmail : email.value, userPassword : password.value})
         .then(result => authenticationSuccess(result.data))
         .catch(err => authenticationSuccess(err.response.data));
+        location.assign('/');
     }
     catch(err){
         console.error(err);
