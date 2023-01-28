@@ -109,6 +109,7 @@ function addExpense(){
     }).then(result => {
 
         addExpenseToList(result.data);
+        showLeaderboard();
     })
     .catch(err => console.log(err));
     

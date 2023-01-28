@@ -34,7 +34,7 @@ app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/leaderboard', leaderboardRoutes);
-app.use(homeRoutes);
+app.use('/', homeRoutes);
 
 Expense.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Expense);

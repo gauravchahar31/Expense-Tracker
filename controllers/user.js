@@ -4,32 +4,6 @@ const passwordEncryption = require('../util/encryptPassword');
 const jwtToken = require('../util/jwtToken');
 const rootDir = path.dirname(require.main.filename);
 
-exports.signupForm = (req, res) => {
-    try{
-        if(req.user){
-            res.redirect('/');
-        }else{
-            res.sendFile(path.join(rootDir, 'views', 'signup.html'));
-        }
-    }
-    catch(err){
-        console.log(err);
-    }
-}
-
-exports.loginForm = (req, res) => {
-    try{
-        if(req.user){
-            res.redirect('/');
-        }else{
-            res.sendFile(path.join(rootDir, 'views', 'login.html'));
-        }
-    }
-    catch(err){
-        console.log(err);
-    }
-}
-
 exports.createNewUser = async (req, res) => {
     try{
         const user = await User.findOne({
@@ -59,7 +33,25 @@ exports.createNewUser = async (req, res) => {
     }
 }
 
-exports.authenicateUser = async (req, res) =>{
+exports.checkUser = async (req, res) => {
+    try{
+        const user = await(User.findOne({
+            where : {
+                email : req.body.userEmail
+            }
+        }));
+        if(user){
+            res.send(true);
+        }else{
+            res.send(false);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+exports.authenicateUser = async (req, res) => {
     try{
         const user = await User.findOne({
             where : {
@@ -80,5 +72,9 @@ exports.authenicateUser = async (req, res) =>{
     catch(err){
         console.error(err);
     }
+}
+
+exports.forgotPassword = async (req, res) => {
+    
 }
 

@@ -3,10 +3,9 @@ const router = express.Router();
 
 const userController = require('../controllers/user');
 
-router.get('/signup', userController.signupForm);
-router.get('/login', userController.loginForm);
-
+router.post('/checkUser', userController.checkUser);
 router.post('/signup', userController.createNewUser);
 router.post('/login', userController.authenicateUser);
+router.post('/forgotPassword', userController.forgotPassword);
 
 module.exports = router;
