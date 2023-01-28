@@ -12,6 +12,7 @@ const userRoutes = require('./routes/user');
 const homeRoutes = require('./routes/home');
 const expenseRoutes = require('./routes/expense');
 const purchaseRoutes = require('./routes/purchase');
+const leaderboardRoutes = require('./routes/leaderboard');
 
 // app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -32,6 +33,7 @@ app.use(async (req, res, next) => {
 app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
+app.use('/leaderboard', leaderboardRoutes);
 app.use(homeRoutes);
 
 Expense.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});

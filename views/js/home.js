@@ -1,7 +1,6 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     axios.get('/expense/getExpense')
     .then(res => {
-        console.log(res.data.isPremium);
         checkPremium(res.data.isPremium);
         arrayOfLists = res.data.expenses;
         arrayOfLists.forEach(list => {
@@ -12,50 +11,84 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function checkPremium(isPremium){
-    const container = document.querySelector('.premiumSection');
     if(isPremium !== true){
+        const container = document.querySelector('.leaderboardColumn');
+        const premiumBox = document.createElement('div');
+        premiumBox.setAttribute('class', 'premiumBox');
+        container.appendChild(premiumBox);
+
         const paymentButton = document.createElement('button');
         paymentButton.setAttribute('id', 'rzp-button1');
-        paymentButton.innerHTML = "Buy Subscription";
-        container.appendChild(paymentButton);
+        paymentButton.innerHTML = "Buy Premium to unlock";
+        premiumBox.appendChild(paymentButton);
 
         paymentButton.addEventListener('click', async (event) => {
-
-        const response = await axios.get('/purchase/premiumSubscription');
-        console.log(response);
-        const options = {
-            "key" : response.data.key_id,
-            "order_id" : response.data.order.id,
-            "handler" : async function (response){
+            const response = await axios.get('/purchase/premiumSubscription');
+            console.log(response);
+            const options = {
+                "key" : response.data.key_id,
+                "order_id" : response.data.order.id,
+                "handler" : async function (response){
+                    await axios.post('/purchase/updateTransactionStatus', {
+                    order_id : options.order_id,
+                    payment_id : response.razorpay_payment_id,
+                    status : 'SUCCESSFUL'
+                })
+                showLeaderboard();
+                }
+            };
+            const razorpay = new Razorpay(options)
+            razorpay.open();
+            event.preventDefault();
+            razorpay.on(`payment.failed`, async (response) => {
                 await axios.post('/purchase/updateTransactionStatus', {
-                order_id : options.order_id,
-                payment_id : response.razorpay_payment_id,
-                status : 'SUCCESSFUL'
-            })
-            container.removeChild(paymentButton);
-            const paymentInfo = document.createElement('h4');
-            paymentInfo.innerHTML = "You are a Premium User";
-            container.appendChild(paymentInfo);
-            }
-        };
-
-        const razorpay = new Razorpay(options)
-        razorpay.open();
-        event.preventDefault();
-        razorpay.on(`payment.failed`, async (response) => {
-            await axios.post('/purchase/updateTransactionStatus', {
-                order_id : options.order_id,
-                payment_id : response.razorpay_payment_id,
-                status : 'FAILED'
-            })
+                    order_id : options.order_id,
+                    payment_id : response.razorpay_payment_id,
+                    status : 'FAILED'
+                })
             alert('Payment Failed');
+            });
         });
-    });
     }else{
-        const paymentInfo = document.createElement('h4');
-        paymentInfo.innerHTML = "You are a Premium User";
-        container.appendChild(paymentInfo);
+        showLeaderboard();
     }
+}
+
+async function showLeaderboard(){
+    const rankers = await axios.get('/leaderboard/getRankers');
+    const container = document.querySelector('.leaderboardColumn');
+    container.innerHTML = '';
+
+    const table = document.createElement('table');
+    table.setAttribute('class', 'table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+    container.appendChild(table);
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    thead.innerHTML = `<tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Expense</th>
+                      </tr>`;
+    let leaderBoardCounter = 1;
+    rankers.data.forEach( ranker => {
+        const tr = document.createElement('tr');
+        const th = document.createElement('th');
+        const tdName = document.createElement('td');
+        const tdExpense = document.createElement('td');
+        th.setAttribute('scope', 'row');
+
+        th.innerHTML = leaderBoardCounter++;
+        tdName.innerHTML = ranker.name;
+        tdExpense.innerHTML = ranker.total_cost;
+
+        tbody.appendChild(tr);
+        tr.appendChild(th);
+        tr.appendChild(tdName);
+        tr.appendChild(tdExpense);
+    })
 }
 
 const form = document.querySelector('form');
