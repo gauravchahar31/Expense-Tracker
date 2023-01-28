@@ -2,6 +2,7 @@ const path = require('path');
 const User = require('../models/User');
 const passwordEncryption = require('../util/encryptPassword');
 const jwtToken = require('../util/jwtToken');
+const mailSystem = require('../util/mails');
 const rootDir = path.dirname(require.main.filename);
 
 exports.createNewUser = async (req, res) => {
@@ -75,6 +76,9 @@ exports.authenicateUser = async (req, res) => {
 }
 
 exports.forgotPassword = async (req, res) => {
-    
+    console.log(req.body);
+
+    const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, 'abcd');
+    console.log(mailResponse);
 }
 

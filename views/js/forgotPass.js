@@ -19,10 +19,14 @@ async function checkUser(input){
         showError(input, `Account Doesn't Exists`);
     }
     else{
-        console.log('Request for reset');
-        // const sendResetLink = await axios.post('/user/forgotPassword', {
-        //     userEmail : userEmail
-        // });
+        const sendResetLink = await axios.post('/user/forgotPassword', {
+            userEmail : input.value
+        });
+        if(sendResetLink == true){
+            document.querySelector('.formMessage').innerHTML = 'Password reset link sent to your email id';
+        }else{
+            document.querySelector('.formMessage').innerHTML = 'Somethign went wrong, Try Again!';
+        }
     }
 }
 
