@@ -2,8 +2,13 @@ const sequelize = require('../database/connection');
 const Expense = require('../models/Expense');
 
 exports.getExpenses = async (req, res) => {
-    const expenses = await req.user.getExpenses()
-    res.json(expenses);
+    const expenses = await req.user.getExpenses();
+    const isPremium = req.user.dataValues.isPremium
+    const data = {
+        isPremium : isPremium,
+        expenses : expenses
+    }
+    res.json(data);
 } 
 
 exports.postExpense = async (req, res) => {

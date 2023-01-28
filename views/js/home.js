@@ -1,13 +1,62 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     axios.get('/expense/getExpense')
     .then(res => {
-        arrayOfLists = res.data;
+        console.log(res.data.isPremium);
+        checkPremium(res.data.isPremium);
+        arrayOfLists = res.data.expenses;
         arrayOfLists.forEach(list => {
             addExpenseToList(list);
         })
     })
     .catch(err => console.log(err));
 });
+
+function checkPremium(isPremium){
+    const container = document.querySelector('.premiumSection');
+    if(isPremium !== true){
+        const paymentButton = document.createElement('button');
+        paymentButton.setAttribute('id', 'rzp-button1');
+        paymentButton.innerHTML = "Buy Subscription";
+        container.appendChild(paymentButton);
+
+        paymentButton.addEventListener('click', async (event) => {
+
+        const response = await axios.get('/purchase/premiumSubscription');
+        console.log(response);
+        const options = {
+            "key" : response.data.key_id,
+            "order_id" : response.data.order.id,
+            "handler" : async function (response){
+                await axios.post('/purchase/updateTransactionStatus', {
+                order_id : options.order_id,
+                payment_id : response.razorpay_payment_id,
+                status : 'SUCCESSFUL'
+            })
+            container.removeChild(paymentButton);
+            const paymentInfo = document.createElement('h4');
+            paymentInfo.innerHTML = "You are a Premium User";
+            container.appendChild(paymentInfo);
+            }
+        };
+
+        const razorpay = new Razorpay(options)
+        razorpay.open();
+        event.preventDefault();
+        razorpay.on(`payment.failed`, async (response) => {
+            await axios.post('/purchase/updateTransactionStatus', {
+                order_id : options.order_id,
+                payment_id : response.razorpay_payment_id,
+                status : 'FAILED'
+            })
+            alert('Payment Failed');
+        });
+    });
+    }else{
+        const paymentInfo = document.createElement('h4');
+        paymentInfo.innerHTML = "You are a Premium User";
+        container.appendChild(paymentInfo);
+    }
+}
 
 const form = document.querySelector('form');
 form.addEventListener('submit', (e) => {
@@ -25,6 +74,7 @@ function addExpense(){
         description : expenseDescription,
         category : expenseCategory
     }).then(result => {
+
         addExpenseToList(result.data);
     })
     .catch(err => console.log(err));
@@ -86,21 +136,3 @@ function addExpenseToList(expense){
 
 //Paymnets
 
-async function razorpayPayment(){
-    try{
-        const response = await axios.get('/purchase/premiumSubscription');
-        console.lor(response);
-        const options = {
-            "key" : response.data.key_id,
-            "order_id" : response.data.order.id,
-            "handler" : async function (response){
-                await axios.post('/purchase/updateTransactionStatus', {
-                ordder_id : options.order_id,
-                payment_id : response.razorpay_payment_id
-            });
-            alert('Premium Member!!');
-        }
-    }}catch(err){
-        console.log(err);
-    }
-}
