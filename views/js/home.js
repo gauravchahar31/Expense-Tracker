@@ -135,28 +135,46 @@ function editExpense(myForm, e){
 }
 
 function addExpenseToList(expense){
-    const container = document.querySelector('ul');
-    const newLi = document.createElement('li');
-    newLi.setAttribute("class", "list-group-item");
-    newLi.innerHTML = `${expense.amount} - ${expense.description}`;
-    container.appendChild(newLi);
+    console.log('HIIII')
+    const tableBody = document.querySelector('.expenseTableBody');
+    const tableRow = document.createElement('tr');
+    const rowDate = document.createElement('th');
+    const rowAmount = document.createElement('th');
+    const rowDescription = document.createElement('td');
+    const rowCategory = document.createElement('td');
+    const rowEdit = document.createElement('td');
+    const rowDelete = document.createElement('td');
+    rowAmount.setAttribute('scope', 'row');
 
-    const deleteButton = document.createElement('a');
-    deleteButton.innerHTML = "X";
-    deleteButton.setAttribute("class", "btn btn-danger btn-sm float-right delete")
-    newLi.appendChild(deleteButton);
+    rowDate.innerHTML = expense.createdAt.split('T')[0];
+    rowAmount.innerHTML = expense.amount;
+    rowDescription.innerHTML = expense.description;
+    rowCategory.innerHTML = expense.category;
 
     const editButton = document.createElement('button');
     editButton.innerHTML = "Edit";
-    editButton.setAttribute("class", "btn btn-success btn-sm float-right edit")
+    editButton.setAttribute("class", "btn btn-success btn-sm  edit")
     editButton.setAttribute("data-toggle", "modal")
     editButton.setAttribute("data-target", "#exampleModalCenter")
-    newLi.appendChild(editButton);
+    rowEdit.appendChild(editButton);
+
+    const deleteButton = document.createElement('a');
+    deleteButton.innerHTML = "X";
+    deleteButton.setAttribute("class", "btn btn-danger btn-sm  delete");
+    rowDelete.appendChild(deleteButton);
+
+    tableBody.appendChild(tableRow);
+    tableRow.appendChild(rowDate);
+    tableRow.appendChild(rowAmount);
+    tableRow.appendChild(rowDescription);
+    tableRow.appendChild(rowCategory);
+    tableRow.appendChild(rowEdit);
+    tableRow.appendChild(rowDelete);
 
     deleteButton.addEventListener('click', (e) => {
         e.preventDefault();
         deleteExpense(expense.id);
-        container.removeChild(newLi);
+        tableBody.removeChild(tableBody);
     })
 
     editButton.addEventListener('click', () => {
@@ -166,6 +184,7 @@ function addExpenseToList(expense){
         document.querySelector('#id').value = expense.id;
         document.querySelector('#editForm').setAttribute("onsubmit", `editExpense(this, event)`);
     });
+
 }
 
 //Paymnets

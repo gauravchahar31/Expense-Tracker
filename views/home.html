@@ -12,23 +12,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Expense Tracker</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-        <a class="nav-item nav-link" href="#">Features</a>
-      </div>
-    </div>
-  </nav>
+  <!-- Image and text -->
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img src="" width="30" height="30" class="d-inline-block align-top" alt="">
+    Expense Tracker
+  </a>
+</nav>
   <br>
   <div class="container-fluid">
     <div class="row">
       <div class="col">
-        <h3><u>Add New Expense</u></h3><br>
+        <h3>Add New Expense</h3><br>
         <form>
           <div class="form-group">
             <label for="exampleFormControlInput1">Expense Amount</label>
@@ -52,22 +47,40 @@
         </form>
       </div>
       <div class="col">
-        <h3><u>LeaderBoard</u></h3>
+        <h3>LeaderBoard</h3>
+        <br>
         <div class="leaderboardColumn">
           
         </div>
     </div>
   </div>
     <br><br><hr>
-    
-    <div class="container-fluid">
-        <br><h1>List Of Expenses</h1><br>
-    </div>
 
     <!-- Container to show Expense List -->
-    <div class="container">
-        <ul class="list-group">
-        </ul>
+    <div class="container-fluid">
+      <h3>View/Download Reports</h3>
+      <button>Daily</button>
+      <button>Monthly</button>
+      <button>Yearly</button>
+      <br>
+      <br>
+      <div class="showExpenses">
+        <table class="table expenseTable">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody class="expenseTableBody">
+
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Modal to edit the expense details -->
