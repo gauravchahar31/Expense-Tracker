@@ -2,6 +2,7 @@ const path = require('path');
 const rootDir = path.dirname(require.main.filename);
 
 const User = require('../models/User');
+const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 
 exports.homePage = async (req, res) => {
    try{ 
@@ -53,4 +54,22 @@ exports.forgotPassword = async (req, res) => {
     catch(err){
         console.log(err);
     }
- }
+}
+
+exports.resetPassword = async (req, res) => {
+    const resetRequest = await ForgetPasswordRequest.findOne({
+        where : {
+            uuid : req.params.uuid
+        }
+    });
+    if(!resetRequest){
+        res.send('Link Not Valid');
+    }
+    else if(!resetRequest.dataValues.isActive){
+        res.send('Link Expired!!');
+    }
+    else{
+        res.cookie('uuid', req.params.uuid);
+        res.sendFile(path.join(rootDir, 'views', 'resetPassword.html'));
+    }
+}

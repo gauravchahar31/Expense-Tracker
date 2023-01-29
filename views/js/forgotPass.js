@@ -22,7 +22,8 @@ async function checkUser(input){
         const sendResetLink = await axios.post('/user/forgotPassword', {
             userEmail : input.value
         });
-        if(sendResetLink == true){
+        console.log(sendResetLink);
+        if(sendResetLink.data === true){
             document.querySelector('.formMessage').innerHTML = 'Password reset link sent to your email id';
         }else{
             document.querySelector('.formMessage').innerHTML = 'Somethign went wrong, Try Again!';

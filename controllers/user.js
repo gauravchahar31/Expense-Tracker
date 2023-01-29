@@ -93,11 +93,41 @@ exports.forgotPassword = async (req, res) => {
         });
 
         const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, uuid);
-        console.log(mailResponse);
+        res.send(mailResponse);
 
     }
     catch(err){
         console.log(err);
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    if(!req.cookies.uuid){
+        res.send(false);
+    }
+    else{
+        const uuidTable = await ForgetPasswordRequest.findOne({
+            where : {
+                uuid : req.cookies.uuid
+            }
+        })
+        await uuidTable.update({
+            isActive : false
+        })
+        req.body.newPassword = await passwordEncryption.encryptPassword(req.body.newPassword);
+        const changePassword = await User.update({
+            password : req.body.newPassword
+        }, {
+            where : {
+                id : uuidTable.dataValues.UserId
+            }
+        }).then(result => {
+            return true;
+        }).catch(err => {
+            return false;
+        })
+        res.cookies('uuid', null);
+        res.send(changePassword);
     }
 }
 
