@@ -6,9 +6,9 @@ exports.sendResetMail = async (userEmail, token) => {
     const msg = {
         to: userEmail, 
         from: 'dcsa2022gauravkumar@kuk.ac.in', 
-        subject: 'Sending with SendGrid is Fun',
-        text: 'and easy to do anywhere, even with Node.js',
-        html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+        subject: 'Reset Password',
+        text: 'Click the link below to reset your password',
+        html: `<a href="localhost:3000/user/resetPassword/${token}">CLICK HERE</a>`,
       }
 
     const sendMail = await sgMail

@@ -7,6 +7,7 @@ const sequelize = require('./database/connection');
 const User = require('./models/User');
 const Expense = require('./models/Expense');
 const Order = require('./models/Order');
+const ForgetPasswordRequest = require('./models/ForgetPasswordRequest');
 
 const userRoutes = require('./routes/user');
 const homeRoutes = require('./routes/home');
@@ -41,6 +42,9 @@ User.hasMany(Expense);
 
 Order.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Order);
+
+ForgetPasswordRequest.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
+User.hasMany(ForgetPasswordRequest);
 
 sequelize.sync();
 

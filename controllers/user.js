@@ -1,8 +1,11 @@
 const path = require('path');
+const sequelize = require('../database/connection');
 const User = require('../models/User');
+const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 const passwordEncryption = require('../util/encryptPassword');
 const jwtToken = require('../util/jwtToken');
 const mailSystem = require('../util/mails');
+const {v4 : uuidv4} = require('uuid');
 const rootDir = path.dirname(require.main.filename);
 
 exports.createNewUser = async (req, res) => {
@@ -76,9 +79,25 @@ exports.authenicateUser = async (req, res) => {
 }
 
 exports.forgotPassword = async (req, res) => {
-    console.log(req.body);
+    try{
+        const uuid = uuidv4();
+        const user = await User.findOne({
+            where : {
+                email : req.body.userEmail
+            }
+        });
+    
+        await user.createForgetPasswordRequest({
+            uuid : uuid,
+            isActive : true
+        });
 
-    const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, 'abcd');
-    console.log(mailResponse);
+        const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, uuid);
+        console.log(mailResponse);
+
+    }
+    catch(err){
+        console.log(err);
+    }
 }
 
