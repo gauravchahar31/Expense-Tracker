@@ -197,6 +197,11 @@ document.getElementById('dailyReport').addEventListener('click', async () => {
             setTimeout(() => {
                 document.querySelector('#subscribeMessage').innerHTML = '';
             }, 5000);
+        }else{
+            var a = document.createElement("a");
+            a.href = report.data;
+            a.download = 'myexpense.csv';
+            a.click();
         }
     }
     catch(err){
@@ -212,6 +217,11 @@ document.getElementById('monthlyReport').addEventListener('click', async () => {
             setTimeout(() => {
                 document.querySelector('#subscribeMessage').innerHTML = '';
             }, 5000);
+        }else{
+            var a = document.createElement("a");
+            a.href = report.data;
+            a.download = 'myexpense.csv';
+            a.click();
         }
     }
     catch(err){
@@ -227,6 +237,11 @@ document.getElementById('yearlyReport').addEventListener('click', async () => {
             setTimeout(() => {
                 document.querySelector('#subscribeMessage').innerHTML = '';
             }, 5000);
+        }else{
+            var a = document.createElement("a");
+            a.href = report.data;
+            a.download = 'myexpense.csv';
+            a.click();
         }
     }
     catch(err){

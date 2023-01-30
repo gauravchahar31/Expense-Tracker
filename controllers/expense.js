@@ -60,15 +60,18 @@ exports.editExpense = async (req, res) =>{
 
 exports.dailyExpense = async (req, res) => {
     try{
-        console.log(req.user);
         if(req.user.isPremium == null){
             res.send(null);
         }else{
-            const expenses = await req.user.getExpenses();
+            const expenses = await req.user.getExpenses({
+                attributes: ['amount', 'description', 'category',
+                [sequelize.fn('DATE', sequelize.col('createdAt')), 'Date']
+                ]
+            });
             const data = JSON.stringify(expenses);
             const fileName = `expense${req.user.id}${new Date()}`;
             const fileURL = await saveFileToS3(data, fileName);
-            console.log(fileURL);
+            res.send(fileURL);
         }
     }
     catch(err){
@@ -78,7 +81,19 @@ exports.dailyExpense = async (req, res) => {
 
 exports.monthlyExpense = async (req, res) => {
     try{
-        
+        // if(req.user.isPremium == null){
+        //     res.send(null);
+        // }else{
+        //     const expenses = await req.user.getExpenses({
+        //         attributes: [[sequelize.fn('sum', sequelize.col('expenses.amount')), 'Expense Amount'],
+        //         [sequelize.fn('MONTH', sequelize.col('createdAt')), 'MONTH']
+        //         ]
+        //     });
+        //     const data = JSON.stringify(expenses);
+        //     const fileName = `expense${req.user.id}${new Date()}`;
+        //     const fileURL = await saveFileToS3(data, fileName);
+        //     res.send(fileURL);
+        // }
     }
     catch(err){
         console.log(err);
@@ -96,25 +111,24 @@ exports.yearlyExpense = async (req, res) => {
 
 const saveFileToS3 = async (data, fileName) => {
     try{
-        awsS3.createBucket( async () => {
-            const params = {
-                Bucket : 'expensetracker-reports',
-                Key : fileName,
-                Body : data,
-                ACL: 'public-read'
-            }
-            return new Promise((resolve, reject) => {
+        return new Promise ((resolve, reject) => {
+            awsS3.createBucket(() => {
+                const params = {
+                    Bucket : 'expensetracker-reports',
+                    Key : fileName,
+                    Body : data,
+                    ACL: 'public-read'
+                }
                 awsS3.upload(params, (err, response) => {
                     if(err){
                         console.log(err);
                         reject(err);
-                    }
-                    else{
+                    }else{
                         console.log(response);
                         resolve(response.Location);
                     }
                 })
-            })
+            });
         })
     }
     catch(err){
