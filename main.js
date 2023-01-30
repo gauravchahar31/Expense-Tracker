@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 const app = express();
 
 const sequelize = require('./database/connection');
@@ -16,6 +19,9 @@ const purchaseRoutes = require('./routes/purchase');
 const leaderboardRoutes = require('./routes/leaderboard');
 
 // app.use(bodyParser.urlencoded({extended: true}));
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static('views'));
@@ -48,4 +54,4 @@ User.hasMany(ForgetPasswordRequest);
 
 sequelize.sync();
 
-app.listen(3000);
+app.listen(process.env.PORT_NUMBER);
