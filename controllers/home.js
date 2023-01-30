@@ -42,13 +42,23 @@ exports.signupPage = async (req, res) => {
     }
 }
 
+exports.logout = (req, res) => {
+    try{
+        res.clearCookie('user');
+        res.redirect('/');
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 exports.forgotPassword = async (req, res) => {
     try{
         if(req.user){
             res.redirect('/');
         }
         else{
-            res.sendFile(path.join(rootDir, 'views', 'forgotPassword.html'));
+            res.sendFile(path.join(rootDir, 'views/PasswordHandler', 'forgotPassword.html'));
         }
     }
     catch(err){
@@ -70,6 +80,6 @@ exports.resetPassword = async (req, res) => {
     }
     else{
         res.cookie('uuid', req.params.uuid);
-        res.sendFile(path.join(rootDir, 'views', 'resetPassword.html'));
+        res.sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
     }
 }

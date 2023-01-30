@@ -135,7 +135,6 @@ function editExpense(myForm, e){
 }
 
 function addExpenseToList(expense){
-    console.log('HIIII')
     const tableBody = document.querySelector('.expenseTableBody');
     const tableRow = document.createElement('tr');
     const rowDate = document.createElement('th');
@@ -187,5 +186,52 @@ function addExpenseToList(expense){
 
 }
 
-//Paymnets
+//Reports
+
+document.getElementById('dailyReport').addEventListener('click', async () => {
+    try{
+        const report = await axios.get('/expense/dailyExpense');
+        console.log(report);
+        if(report.data == ''){
+            document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
+            setTimeout(() => {
+                document.querySelector('#subscribeMessage').innerHTML = '';
+            }, 5000);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+document.getElementById('monthlyReport').addEventListener('click', async () => {
+    try{
+        const report = await axios.get('/expense/monthlyExpense');
+        if(report.data == ''){
+            document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
+            setTimeout(() => {
+                document.querySelector('#subscribeMessage').innerHTML = '';
+            }, 5000);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+document.getElementById('yearlyReport').addEventListener('click', async () => {
+    try{
+        const report = await axios.get('/expense/yearlyExpense');
+        if(report.data == ''){
+            document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
+            setTimeout(() => {
+                document.querySelector('#subscribeMessage').innerHTML = '';
+            }, 5000);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
 

@@ -1,5 +1,7 @@
+const { response } = require('express');
 const sequelize = require('../database/connection');
 const Expense = require('../models/Expense');
+const awsS3 = require('../util/aws');
 
 exports.getExpenses = async (req, res) => {
     const expenses = await req.user.getExpenses();
@@ -54,4 +56,68 @@ exports.editExpense = async (req, res) =>{
         console.log(err);
         res.json(err.response);
     })
+}
+
+exports.dailyExpense = async (req, res) => {
+    try{
+        console.log(req.user);
+        if(req.user.isPremium == null){
+            res.send(null);
+        }else{
+            const expenses = await req.user.getExpenses();
+            const data = JSON.stringify(expenses);
+            const fileName = `expense${req.user.id}${new Date()}`;
+            const fileURL = await saveFileToS3(data, fileName);
+            console.log(fileURL);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+exports.monthlyExpense = async (req, res) => {
+    try{
+        
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+exports.yearlyExpense = async (req, res) => {
+    try{
+        
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+const saveFileToS3 = async (data, fileName) => {
+    try{
+        awsS3.createBucket( async () => {
+            const params = {
+                Bucket : 'expensetracker-reports',
+                Key : fileName,
+                Body : data,
+                ACL: 'public-read'
+            }
+            return new Promise((resolve, reject) => {
+                awsS3.upload(params, (err, response) => {
+                    if(err){
+                        console.log(err);
+                        reject(err);
+                    }
+                    else{
+                        console.log(response);
+                        resolve(response.Location);
+                    }
+                })
+            })
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
 }

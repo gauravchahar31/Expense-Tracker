@@ -18,6 +18,7 @@
     <img src="" width="30" height="30" class="d-inline-block align-top" alt="">
     Expense Tracker
   </a>
+  <a class="btn btn-primary" href="/logout">Logout</a>
 </nav>
   <br>
   <div class="container-fluid">
@@ -58,11 +59,12 @@
 
     <!-- Container to show Expense List -->
     <div class="container-fluid">
-      <h3>View/Download Reports</h3>
-      <button>Daily</button>
-      <button>Monthly</button>
-      <button>Yearly</button>
+      <h3>Download Reports</h3>
+      <button class="btn btn-primary" id="dailyReport">Daily</button>
+      <button class="btn btn-primary" id="monthlyReport">Monthly</button>
+      <button class="btn btn-primary" id="yearlyReport">Yearly</button>
       <br>
+      <small id="subscribeMessage"></small>
       <br>
       <div class="showExpenses">
         <table class="table expenseTable">
