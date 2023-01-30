@@ -45,6 +45,7 @@
           <div class="form-group">
               <input type="submit" class="form-control" id="exampleFormControlInput1">
           </div>
+          <small class="newExpense"></small>
         </form>
       </div>
       <div class="col">
@@ -66,6 +67,13 @@
       <br>
       <small id="subscribeMessage"></small>
       <br>
+      <span>No Of Rows Per Page : </span>
+      <select name="sizeOfPage" id="sizeOfPage">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+      </select>
+      <br>
       <div class="showExpenses">
         <table class="table expenseTable">
           <thead>
@@ -82,6 +90,11 @@
 
           </tbody>
         </table>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+
+          </ul>
+        </nav>
       </div>
     </div>
 

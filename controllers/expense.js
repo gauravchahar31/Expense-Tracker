@@ -4,11 +4,27 @@ const Expense = require('../models/Expense');
 const awsS3 = require('../util/aws');
 
 exports.getExpenses = async (req, res) => {
-    const expenses = await req.user.getExpenses();
+    if(!req.query.page){
+        req.query = {
+            page : 1,
+            size : 10
+        }
+    }
+    console.log(req.query);
+    const expenses = await req.user.getExpenses({
+        offset : ((parseInt(req.query.page)-1) * parseInt(req.query.size)),
+        limit: parseInt(req.query.size)
+    });
+    const totalExpenses = await req.user.getExpenses({
+        attributes: [
+            [sequelize.fn('COUNT', sequelize.col('id')), 'TOTAL_EXPENSES'],
+        ]
+    });
     const isPremium = req.user.dataValues.isPremium
     const data = {
         isPremium : isPremium,
-        expenses : expenses
+        expenses : expenses,
+        totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
     }
     res.json(data);
 } 

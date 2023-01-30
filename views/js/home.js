@@ -1,14 +1,72 @@
 window.addEventListener('DOMContentLoaded', (event) => {
-    axios.get('/expense/getExpense')
+    axios.get('/expense/getExpense/')
     .then(res => {
         checkPremium(res.data.isPremium);
         arrayOfLists = res.data.expenses;
+        console.log(res.data.totalExpenses);
+        pagination(res.data.totalExpenses, 10);
         arrayOfLists.forEach(list => {
             addExpenseToList(list);
         })
+
     })
     .catch(err => console.log(err));
 });
+
+function getExpenses(noOfRows){
+    return axios.get(`/expense/getExpense/?page=1&size=${noOfRows}`)
+    .then(res => {
+        return (res.data);
+    })
+    .catch(err => console.log(err));
+}
+
+const sizeOfPage = document.getElementById("sizeOfPage");
+sizeOfPage.addEventListener("change", async () => {
+    const noOfRows = parseInt(sizeOfPage.options[sizeOfPage.selectedIndex].value);
+    const expensesList = await getExpenses(noOfRows);
+    const expensesArray = expensesList.expenses;
+    document.querySelector('.expenseTableBody').innerHTML = '';
+    expensesArray.forEach(list => {
+        addExpenseToList(list);
+    })
+    pagination(expensesList.totalExpenses, noOfRows);
+});
+
+function pagination(totalExpenses, noOfRows){
+    const container = document.querySelector('.pagination');
+    container.innerHTML = '';
+    let noOfPages = Math.floor(totalExpenses/noOfRows);
+    if(totalExpenses%noOfRows){
+        noOfPages += 1;
+    }
+    for(let i=1; i <= noOfPages; i++){
+        const li = document.createElement('li');
+        li.setAttribute('class', 'page-item');
+
+        const a = document.createElement('a');
+        a.setAttribute('class', 'page-link');
+        a.innerHTML = i;
+
+        a.addEventListener('click', async () => {
+            const sizeOfPage = document.getElementById('sizeOfPage').value;
+            axios.get(`/expense/getExpense/?page=${a.innerHTML}&size=${sizeOfPage}`)
+            .then(res => {
+                arrayOfLists = res.data.expenses;
+                document.querySelector('.expenseTableBody').innerHTML = '';
+                arrayOfLists.forEach(list => {
+                    addExpenseToList(list);
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        })
+        li.appendChild(a);
+        container.appendChild(li);
+    }
+    
+}
 
 function checkPremium(isPremium){
     if(isPremium !== true){
@@ -107,8 +165,10 @@ function addExpense(){
         description : expenseDescription,
         category : expenseCategory
     }).then(result => {
-
-        addExpenseToList(result.data);
+        document.querySelector('.newExpense').innerHTML = 'Added Successfully';
+        setTimeout( () => {
+            document.querySelector('.newExpense').innerHTML = '';
+        }, 2000);
         showLeaderboard();
     })
     .catch(err => console.log(err));
