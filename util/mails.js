@@ -5,7 +5,8 @@ const mailjet = Mailjet.apiConnect(
 );
 
 exports.sendResetMail = async (userEmail, token) => {
-  const request = mailjet
+  try{
+    const request = mailjet
     .post('send', { version: 'v3.1' })
     .request({
       Messages: [
@@ -26,13 +27,18 @@ exports.sendResetMail = async (userEmail, token) => {
         }
       ]
     })
-  const sendMail = await request
-    .then((result) => {
-      return true;
-    })
-    .catch((err) => {
-      console.log(err);
-      return false;
-    })
-  return sendMail;
+
+    const sendMail = await request
+      .then((result) => {
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        return false;
+      })
+    return sendMail;
+  }
+  catch(err){
+    console.log(err);
+  }
 }

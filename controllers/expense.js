@@ -1,77 +1,97 @@
-const { response } = require('express');
+const express = require('express');
 const sequelize = require('../database/connection');
 const Expense = require('../models/Expense');
 const awsS3 = require('../util/aws');
 
 exports.getExpenses = async (req, res) => {
-    if(!req.query.page){
-        req.query = {
-            page : 1,
-            size : 10
+    try{
+        if(!req.query.page){
+            req.query = {
+                page : 1,
+                size : 10
+            }
         }
+        console.log(req.query);
+        const expenses = await req.user.getExpenses({
+            offset : ((parseInt(req.query.page)-1) * parseInt(req.query.size)),
+            limit: parseInt(req.query.size)
+        });
+        const totalExpenses = await req.user.getExpenses({
+            attributes: [
+                [sequelize.fn('COUNT', sequelize.col('id')), 'TOTAL_EXPENSES'],
+            ]
+        });
+        const isPremium = req.user.dataValues.isPremium
+        const data = {
+            isPremium : isPremium,
+            expenses : expenses,
+            totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
+        }
+        res.json(data);
     }
-    console.log(req.query);
-    const expenses = await req.user.getExpenses({
-        offset : ((parseInt(req.query.page)-1) * parseInt(req.query.size)),
-        limit: parseInt(req.query.size)
-    });
-    const totalExpenses = await req.user.getExpenses({
-        attributes: [
-            [sequelize.fn('COUNT', sequelize.col('id')), 'TOTAL_EXPENSES'],
-        ]
-    });
-    const isPremium = req.user.dataValues.isPremium
-    const data = {
-        isPremium : isPremium,
-        expenses : expenses,
-        totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
+    catch(err){
+        console.log(err);
     }
-    res.json(data);
 } 
 
 exports.postExpense = async (req, res) => {
-    await req.user.createExpense({
-        amount : req.body.amount,
-        description : req.body.description,
-        category : req.body.category
-    })
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
+    try{
+        await req.user.createExpense({
+            amount : req.body.amount,
+            description : req.body.description,
+            category : req.body.category
+        })
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.json(err.response);
+        })
+    }
+    catch(err){
         console.log(err);
-        res.json(err.response);
-    })
+    }
 }
 
 exports.deleteExpense = async (req, res) => {
-    await Expense.destroy({ where : {
-        id : req.params.id
-    }})
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
+    try{
+        await Expense.destroy({ where : {
+            id : req.params.id
+        }})
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.json(err.response);
+        })
+    }
+    catch(err){
         console.log(err);
-        res.json(err.response);
-    })
+    }
 }
 
 exports.editExpense = async (req, res) =>{
-    await Expense.update({
-        amount : req.body.amount,
-        description : req.body.description,
-        category : req.body.category
-    }, { where : {
-        id : req.params.id
-    }})
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
+    try{
+        await Expense.update({
+            amount : req.body.amount,
+            description : req.body.description,
+            category : req.body.category
+        }, { where : {
+            id : req.params.id
+        }})
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.json(err.response);
+        })
+    }
+    catch(err){
         console.log(err);
-        res.json(err.response);
-    })
+    }
 }
 
 exports.dailyExpense = async (req, res) => {

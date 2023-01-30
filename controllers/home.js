@@ -67,19 +67,24 @@ exports.forgotPassword = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
-    const resetRequest = await ForgetPasswordRequest.findOne({
-        where : {
-            uuid : req.params.uuid
+    try{
+        const resetRequest = await ForgetPasswordRequest.findOne({
+            where : {
+                uuid : req.params.uuid
+            }
+        });
+        if(!resetRequest){
+            res.send('Link Not Valid');
         }
-    });
-    if(!resetRequest){
-        res.send('Link Not Valid');
+        else if(!resetRequest.dataValues.isActive){
+            res.send('Link Expired!!');
+        }
+        else{
+            res.cookie('uuid', req.params.uuid);
+            res.sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
+        }
     }
-    else if(!resetRequest.dataValues.isActive){
-        res.send('Link Expired!!');
-    }
-    else{
-        res.cookie('uuid', req.params.uuid);
-        res.sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
+    catch(err){
+        console.log(err);
     }
 }
