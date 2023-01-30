@@ -19,6 +19,7 @@ const purchaseRoutes = require('./routes/purchase');
 const leaderboardRoutes = require('./routes/leaderboard');
 
 // app.use(bodyParser.urlencoded({extended: true}));
+require('dotenv').config()
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));

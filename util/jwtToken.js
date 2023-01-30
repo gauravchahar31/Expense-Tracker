@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-
 exports.createToken = async (userData) =>{
     try{
         return jwt.sign(userData, process.env.JWT_SK)
