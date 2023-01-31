@@ -18,6 +18,14 @@ const expenseRoutes = require('./routes/expense');
 const purchaseRoutes = require('./routes/purchase');
 const leaderboardRoutes = require('./routes/leaderboard');
 
+const csp = require('express-csp-header');
+app.use(csp({
+    policies: {
+        'default-src': [csp.NONE],
+        'img-src': [csp.SELF],
+    }
+}));
+
 // app.use(bodyParser.urlencoded({extended: true}));
 require('dotenv').config()
 app.use(helmet());
