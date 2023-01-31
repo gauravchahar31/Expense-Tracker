@@ -55,4 +55,6 @@ User.hasMany(ForgetPasswordRequest);
 
 sequelize.sync();
 
-app.listen(process.env.PORT_NUMBER);
+app.listen(process.env.PORT_NUMBER, () => {
+    console.log(`Server started running at : ${process.env.PORT_NUMBER}`);
+});
