@@ -14,7 +14,8 @@ exports.getExpenses = async (req, res) => {
         console.log(req.query);
         const expenses = await req.user.getExpenses({
             offset : ((parseInt(req.query.page)-1) * parseInt(req.query.size)),
-            limit: parseInt(req.query.size)
+            limit: parseInt(req.query.size),
+            order: [['createdAt', 'DESC']]
         });
         const totalExpenses = await req.user.getExpenses({
             attributes: [

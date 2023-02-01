@@ -32,8 +32,7 @@ function getExpenses(noOfRows){
     }
 }
 
-const sizeOfPage = document.getElementById("sizeOfPage");
-sizeOfPage.addEventListener("change", async () => {
+async function updatePagination(){
     try{
         const noOfRows = parseInt(sizeOfPage.options[sizeOfPage.selectedIndex].value);
         const expensesList = await getExpenses(noOfRows);
@@ -43,6 +42,16 @@ sizeOfPage.addEventListener("change", async () => {
             addExpenseToList(list);
         })
         pagination(expensesList.totalExpenses, noOfRows);
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+const sizeOfPage = document.getElementById("sizeOfPage");
+sizeOfPage.addEventListener("change", async () => {
+    try{
+        updatePagination();
     }
     catch(err){
         console.log(err);
@@ -204,6 +213,7 @@ function addExpense(){
                 document.querySelector('.newExpense').innerHTML = '';
             }, 2000);
             showLeaderboard();
+            updatePagination();
         })
         .catch(err => {
             console.log(err)
@@ -221,6 +231,7 @@ function deleteExpense(id){
             .then(result => {
                 console.log(result)
                 showLeaderboard();
+                updatePagination();
             })
             .catch(err => {
                 console.log(err)
@@ -243,6 +254,7 @@ function editExpense(myForm, e){
         .then(result => {
             console.log(result);
             showLeaderboard();
+            updatePagination();
         })
         .catch(err => console.log(err));
     }
@@ -291,7 +303,7 @@ function addExpenseToList(expense){
         deleteButton.addEventListener('click', (e) => {
             e.preventDefault();
             deleteExpense(expense.id);
-            tableBody.removeChild(tableBody);
+            tableBody.removeChild(tableRow);
         })
 
         editButton.addEventListener('click', () => {
