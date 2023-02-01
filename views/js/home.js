@@ -229,7 +229,6 @@ function deleteExpense(id){
     try{
         axios.delete(`/expense/deleteExpense/${id}`)
             .then(result => {
-                console.log(result)
                 showLeaderboard();
                 updatePagination();
             })
@@ -252,7 +251,6 @@ function editExpense(myForm, e){
             category : myForm.category.value
         })
         .then(result => {
-            console.log(result);
             showLeaderboard();
             updatePagination();
         })
@@ -325,7 +323,6 @@ function addExpenseToList(expense){
 document.getElementById('dailyReport').addEventListener('click', async () => {
     try{
         const report = await axios.get('/expense/dailyExpense');
-        console.log(report);
         if(report.data == ''){
             document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
             setTimeout(() => {
