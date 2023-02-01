@@ -7,7 +7,6 @@ const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 exports.homePage = async (req, res) => {
    try{ 
         if(req.user){
-            console.log('homePage');
             res.sendFile(path.join(rootDir, 'views', 'home.html'));
         }
         else{

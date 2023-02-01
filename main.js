@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -28,7 +29,11 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.static('views'));
+
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, `views/${req.url}`));
+    next();
+});
 
 app.use(async (req, res, next) => {
     if(req.cookies.user){
