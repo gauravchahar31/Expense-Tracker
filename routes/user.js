@@ -8,5 +8,6 @@ router.post('/signup', userController.createNewUser);
 router.post('/login', userController.authenicateUser);
 router.post('/forgotPassword', userController.forgotPassword);
 router.post('/resetPassword', userController.resetPassword);
+router.get('/checkPremium', userController.checkPremium);
 
 module.exports = router;

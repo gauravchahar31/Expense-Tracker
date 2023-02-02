@@ -145,10 +145,10 @@ exports.checkPremium = async (req, res) => {
     try{
         const user = await User.findOne({
         where : {
-            email : req.body.userEmail
+            jwt : req.cookies.user
         }
         });
-        res.status(200).send(user.isActive);
+        res.status(200).send(user.dataValues.isPremium);
     }
     catch(err){
         console.log(err);

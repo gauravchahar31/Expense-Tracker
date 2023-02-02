@@ -4,7 +4,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
         .then(res => {
             checkPremium(res.data.isPremium);
             arrayOfLists = res.data.expenses;
-            console.log(res.data.totalExpenses);
             pagination(res.data.totalExpenses, 10);
             arrayOfLists.forEach(list => {
                 addExpenseToList(list);
