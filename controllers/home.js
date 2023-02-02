@@ -7,7 +7,7 @@ const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 exports.homePage = async (req, res) => {
    try{ 
         if(req.user){
-            res.statusCode(200).sendFile(path.join(rootDir, 'views', 'home.html'));
+            res.status(200).sendFile(path.join(rootDir, 'views', 'home.html'));
         }
         else{
             res.redirect('/login');
@@ -15,7 +15,7 @@ exports.homePage = async (req, res) => {
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -24,11 +24,11 @@ exports.loginPage = async (req, res) => {
         if(req.user){
             res.redirect('/');
         }
-        res.statusCode(200).sendFile(path.join(rootDir, 'views', 'login.html'));
+        res.status(200).sendFile(path.join(rootDir, 'views', 'login.html'));
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -37,11 +37,11 @@ exports.signupPage = async (req, res) => {
         if(req.user){
             res.redirect('/');
         }
-        res.statusCode(200).sendFile(path.join(rootDir, 'views', 'signup.html'));
+        res.status(200).sendFile(path.join(rootDir, 'views', 'signup.html'));
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -52,7 +52,7 @@ exports.logout = (req, res) => {
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -62,12 +62,12 @@ exports.forgotPassword = async (req, res) => {
             res.redirect('/');
         }
         else{
-            res.statusCode(200).sendFile(path.join(rootDir, 'views/PasswordHandler', 'forgotPassword.html'));
+            res.status(200).sendFile(path.join(rootDir, 'views/PasswordHandler', 'forgotPassword.html'));
         }
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -79,18 +79,18 @@ exports.resetPassword = async (req, res) => {
             }
         });
         if(!resetRequest){
-            res.statusCode(400).send('Link Not Valid');
+            res.status(400).send('Link Not Valid');
         }
         else if(!resetRequest.dataValues.isActive){
-            res.statusCode(400).send('Link Expired!!');
+            res.status(400).send('Link Expired!!');
         }
         else{
             res.cookie('uuid', req.params.uuid);
-            res.statusCode(200).sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
+            res.status(200).sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
         }
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }

@@ -28,11 +28,11 @@ exports.getExpenses = async (req, res) => {
             expenses : expenses,
             totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
         }
-        res.statusCode(200).json(data);
+        res.status(200).json(data);
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 } 
 
@@ -48,12 +48,12 @@ exports.postExpense = async (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.statusCode(200).json(err.response);
+            res.status(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
-        res.statusCode(500).json(null);
+        res.status(500).json(null);
     }
 }
 
@@ -67,12 +67,12 @@ exports.deleteExpense = async (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.statusCode(200).json(err.response);
+            res.status(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
-        res.statusCode(500).json(null);
+        res.status(500).json(null);
     }
 }
 
@@ -90,12 +90,12 @@ exports.editExpense = async (req, res) =>{
         })
         .catch(err => {
             console.log(err);
-            res.statusCode(200).json(err.response);
+            res.status(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
-        res.statusCode(500).json(null);
+        res.status(500).json(null);
     }
 }
 
@@ -112,12 +112,12 @@ exports.dailyExpense = async (req, res) => {
             const data = JSON.stringify(expenses);
             const fileName = `expense${req.user.id}${new Date()}`;
             const fileURL = await saveFileToS3(data, fileName);
-            res.statusCode(200).send(fileURL);
+            res.status(200).send(fileURL);
         }
     }
     catch(err){
         console.log(err);
-        res.statusCode(500).json(null);
+        res.status(500).json(null);
     }
 }
 
@@ -175,6 +175,6 @@ const saveFileToS3 = async (data, fileName) => {
     }
     catch(err){
         console.log(err);
-        res.statusCode(500).json(null);
+        res.status(500).json(null);
     }
 }
