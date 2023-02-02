@@ -29,11 +29,12 @@ exports.createNewUser = async (req, res) => {
                 res.send('Something went wrong!')
             }); 
         }else{
-            res.send('Email Already Exists!')
+            res.statusCode(200).send('Email Already Exists!')
         }
     }
     catch(err){
         console.error(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -45,13 +46,14 @@ exports.checkUser = async (req, res) => {
             }
         }));
         if(user){
-            res.send(true);
+            res.statusCode(200).send(true);
         }else{
-            res.send(false);
+            res.statusCode(200).send(false);
         }
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -65,7 +67,7 @@ exports.authenicateUser = async (req, res) => {
         if(user){
             if(await passwordEncryption.decryptPassword(req.body.userPassword, user.password)){
                 res.cookie('user', user.jwt);
-                res.send('Account Verified!, Moving to Home Page')
+                res.statusCode(200).send('Account Verified!, Moving to Home Page')
             }else{
                 res.status(401).send('Incorrect Email or Password')
             }
@@ -75,6 +77,7 @@ exports.authenicateUser = async (req, res) => {
     }
     catch(err){
         console.error(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -93,41 +96,63 @@ exports.forgotPassword = async (req, res) => {
         });
 
         const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, uuid);
-        res.send(mailResponse);
+        res.statusCode(200).send(mailResponse);
 
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
 exports.resetPassword = async (req, res) => {
-    if(!req.cookies.uuid){
-        res.send(false);
+    try{
+        if(!req.cookies.uuid){
+            res.send(false);
+        }
+        else{
+            const uuidTable = await ForgetPasswordRequest.findOne({
+                where : {
+                    uuid : req.cookies.uuid
+                }
+            })
+            await uuidTable.update({
+                isActive : false
+            })
+            req.body.newPassword = await passwordEncryption.encryptPassword(req.body.newPassword);
+            const changePassword = await User.update({
+                password : req.body.newPassword
+            }, {
+                where : {
+                    id : uuidTable.dataValues.UserId
+                }
+            }).then(result => {
+                return true;
+            }).catch(err => {
+                return false;
+            })
+            res.cookies('uuid', null);
+            res.statusCode(200).send(changePassword);
+        }
     }
-    else{
-        const uuidTable = await ForgetPasswordRequest.findOne({
-            where : {
-                uuid : req.cookies.uuid
-            }
-        })
-        await uuidTable.update({
-            isActive : false
-        })
-        req.body.newPassword = await passwordEncryption.encryptPassword(req.body.newPassword);
-        const changePassword = await User.update({
-            password : req.body.newPassword
-        }, {
-            where : {
-                id : uuidTable.dataValues.UserId
-            }
-        }).then(result => {
-            return true;
-        }).catch(err => {
-            return false;
-        })
-        res.cookies('uuid', null);
-        res.send(changePassword);
+    catch(err){
+        console.log(err);
+        res.statusCode(400).json(null);
+    }
+}
+
+exports.checkPremium = async (req, res) => {
+    try{
+        const user = await User.findOne({
+        where : {
+            email : req.body.userEmail
+        }
+        });
+        res.statusCode(200).send(user.isActive);
+    }
+    catch(err){
+        console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 

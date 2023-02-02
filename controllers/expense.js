@@ -28,10 +28,11 @@ exports.getExpenses = async (req, res) => {
             expenses : expenses,
             totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
         }
-        res.json(data);
+        res.statusCode(200).json(data);
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 } 
 
@@ -47,11 +48,12 @@ exports.postExpense = async (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.json(err.response);
+            res.statusCode(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
+        res.statusCode(500).json(null);
     }
 }
 
@@ -65,11 +67,12 @@ exports.deleteExpense = async (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.json(err.response);
+            res.statusCode(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
+        res.statusCode(500).json(null);
     }
 }
 
@@ -87,11 +90,12 @@ exports.editExpense = async (req, res) =>{
         })
         .catch(err => {
             console.log(err);
-            res.json(err.response);
+            res.statusCode(200).json(err.response);
         })
     }
     catch(err){
         console.log(err);
+        res.statusCode(500).json(null);
     }
 }
 
@@ -108,11 +112,12 @@ exports.dailyExpense = async (req, res) => {
             const data = JSON.stringify(expenses);
             const fileName = `expense${req.user.id}${new Date()}`;
             const fileURL = await saveFileToS3(data, fileName);
-            res.send(fileURL);
+            res.statusCode(200).send(fileURL);
         }
     }
     catch(err){
         console.log(err);
+        res.statusCode(500).json(null);
     }
 }
 
@@ -170,5 +175,6 @@ const saveFileToS3 = async (data, fileName) => {
     }
     catch(err){
         console.log(err);
+        res.statusCode(500).json(null);
     }
 }

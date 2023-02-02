@@ -7,7 +7,7 @@ const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 exports.homePage = async (req, res) => {
    try{ 
         if(req.user){
-            res.sendFile(path.join(rootDir, 'views', 'home.html'));
+            res.statusCode(200).sendFile(path.join(rootDir, 'views', 'home.html'));
         }
         else{
             res.redirect('/login');
@@ -15,6 +15,7 @@ exports.homePage = async (req, res) => {
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -23,10 +24,11 @@ exports.loginPage = async (req, res) => {
         if(req.user){
             res.redirect('/');
         }
-        res.sendFile(path.join(rootDir, 'views', 'login.html'));
+        res.statusCode(200).sendFile(path.join(rootDir, 'views', 'login.html'));
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -35,10 +37,11 @@ exports.signupPage = async (req, res) => {
         if(req.user){
             res.redirect('/');
         }
-        res.sendFile(path.join(rootDir, 'views', 'signup.html'));
+        res.statusCode(200).sendFile(path.join(rootDir, 'views', 'signup.html'));
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -49,6 +52,7 @@ exports.logout = (req, res) => {
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -58,11 +62,12 @@ exports.forgotPassword = async (req, res) => {
             res.redirect('/');
         }
         else{
-            res.sendFile(path.join(rootDir, 'views/PasswordHandler', 'forgotPassword.html'));
+            res.statusCode(200).sendFile(path.join(rootDir, 'views/PasswordHandler', 'forgotPassword.html'));
         }
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }
 
@@ -74,17 +79,18 @@ exports.resetPassword = async (req, res) => {
             }
         });
         if(!resetRequest){
-            res.send('Link Not Valid');
+            res.statusCode(400).send('Link Not Valid');
         }
         else if(!resetRequest.dataValues.isActive){
-            res.send('Link Expired!!');
+            res.statusCode(400).send('Link Expired!!');
         }
         else{
             res.cookie('uuid', req.params.uuid);
-            res.sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
+            res.statusCode(200).sendFile(path.join(rootDir, 'views/Passwordhandler', 'resetPassword.html'));
         }
     }
     catch(err){
         console.log(err);
+        res.statusCode(400).json(null);
     }
 }

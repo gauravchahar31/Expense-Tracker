@@ -32,6 +32,24 @@ function getExpenses(noOfRows){
     }
 }
 
+async function checkAndShowLeaderboard(){
+    try{
+        const isPremium = await axios.get('/user/checkPremium')
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        if(isPremium){
+            showLeaderboard();
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 async function updatePagination(){
     try{
         const noOfRows = parseInt(sizeOfPage.options[sizeOfPage.selectedIndex].value);
@@ -72,6 +90,7 @@ function pagination(totalExpenses, noOfRows){
 
             const a = document.createElement('a');
             a.setAttribute('class', 'page-link');
+            a.setAttribute("style", "color: #E9E8E8; background-color: #913175; border-color: #CD5888;")
             a.innerHTML = i;
 
             a.addEventListener('click', async () => {
@@ -107,6 +126,8 @@ function checkPremium(isPremium){
     
             const paymentButton = document.createElement('button');
             paymentButton.setAttribute('id', 'rzp-button1');
+            paymentButton.setAttribute('class', 'btn btn-primary');
+            paymentButton.setAttribute('style', 'color: #E9E8E8; background-color: #913175; border-color: #CD5888;')
             paymentButton.innerHTML = "Buy Premium to unlock";
             premiumBox.appendChild(paymentButton);
     
@@ -171,7 +192,21 @@ async function showLeaderboard(){
             const tdExpense = document.createElement('td');
             th.setAttribute('scope', 'row');
 
-            th.innerHTML = leaderBoardCounter++;
+            if(leaderBoardCounter === 1){
+                th.innerHTML = '🥇';
+                leaderBoardCounter++;
+            }
+            else if(leaderBoardCounter === 2){
+                th.innerHTML = '🥈';
+                leaderBoardCounter++;
+            }
+            else if(leaderBoardCounter === 3){
+                th.innerHTML = '🥉';
+                leaderBoardCounter++;
+            }
+            else{
+                th.innerHTML = leaderBoardCounter++;
+            }
             tdName.innerHTML = ranker.name;
             tdExpense.innerHTML = ranker.total_cost;
 
@@ -212,7 +247,7 @@ function addExpense(){
             setTimeout( () => {
                 document.querySelector('.newExpense').innerHTML = '';
             }, 2000);
-            showLeaderboard();
+            checkAndShowLeaderboard();
             updatePagination();
         })
         .catch(err => {
@@ -229,7 +264,7 @@ function deleteExpense(id){
     try{
         axios.delete(`/expense/deleteExpense/${id}`)
             .then(result => {
-                showLeaderboard();
+                checkAndShowLeaderboard();
                 updatePagination();
             })
             .catch(err => {
@@ -251,7 +286,7 @@ function editExpense(myForm, e){
             category : myForm.category.value
         })
         .then(result => {
-            showLeaderboard();
+            checkAndShowLeaderboard();
             updatePagination();
         })
         .catch(err => console.log(err));
