@@ -1,11 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
-const compression = require('compression');
-const morgan = require('morgan');
 const app = express();
+
 
 const sequelize = require('./database/connection');
 const User = require('./models/User');
@@ -20,25 +17,9 @@ const purchaseRoutes = require('./routes/purchase');
 const leaderboardRoutes = require('./routes/leaderboard');
 
 const cors = require('cors');
-const corsOpts = {
-    origin: '*',
-  
-    methods: [
-      'GET',
-      'POST',
-    ],
-  
-    allowedHeaders: [
-      'Content-Type',
-    ],
-  };
-app.use(cors(corsOpts));
-
-// app.use(bodyParser.urlencoded({extended: true}));
-require('dotenv').config()
-app.use(helmet());
-app.use(compression());
-app.use(morgan('combined'));
+app.use(cors());
+app.use(express.static('views'));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -58,11 +39,6 @@ app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/leaderboard', leaderboardRoutes);
 app.use('/', homeRoutes);
-
-app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, `views/${req.url}`));
-    // next();
-});
 
 Expense.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Expense);
