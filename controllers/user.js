@@ -29,12 +29,12 @@ exports.createNewUser = async (req, res) => {
                 res.send('Something went wrong!')
             }); 
         }else{
-            res.statusCode(200).send('Email Already Exists!')
+            res.status(200).send('Email Already Exists!')
         }
     }
     catch(err){
         console.error(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -46,14 +46,14 @@ exports.checkUser = async (req, res) => {
             }
         }));
         if(user){
-            res.statusCode(200).send(true);
+            res.status(200).send(true);
         }else{
-            res.statusCode(200).send(false);
+            res.status(200).send(false);
         }
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -67,7 +67,7 @@ exports.authenicateUser = async (req, res) => {
         if(user){
             if(await passwordEncryption.decryptPassword(req.body.userPassword, user.password)){
                 res.cookie('user', user.jwt);
-                res.statusCode(200).send('Account Verified!, Moving to Home Page')
+                res.status(200).send('Account Verified!, Moving to Home Page')
             }else{
                 res.status(401).send('Incorrect Email or Password')
             }
@@ -77,7 +77,7 @@ exports.authenicateUser = async (req, res) => {
     }
     catch(err){
         console.error(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -96,12 +96,12 @@ exports.forgotPassword = async (req, res) => {
         });
 
         const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, uuid);
-        res.statusCode(200).send(mailResponse);
+        res.status(200).send(mailResponse);
 
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -132,12 +132,12 @@ exports.resetPassword = async (req, res) => {
                 return false;
             })
             res.cookies('uuid', null);
-            res.statusCode(200).send(changePassword);
+            res.status(200).send(changePassword);
         }
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
@@ -148,11 +148,11 @@ exports.checkPremium = async (req, res) => {
             email : req.body.userEmail
         }
         });
-        res.statusCode(200).send(user.isActive);
+        res.status(200).send(user.isActive);
     }
     catch(err){
         console.log(err);
-        res.statusCode(400).json(null);
+        res.status(400).json(null);
     }
 }
 
