@@ -50,6 +50,7 @@ async function checkAndShowLeaderboard(){
     }
 }
 
+
 async function updatePagination(){
     try{
         const noOfRows = parseInt(sizeOfPage.options[sizeOfPage.selectedIndex].value);
