@@ -1,22 +1,19 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../database/connection');
 
-const Order = sequelize.define('Order', {
+const ForgetPasswordRequest = sequelize.define('ForgetPasswordRequest', {
     id : {
         type : Sequelize.INTEGER,
         primaryKey : true,
         autoIncrement : true,
         allowNul : false
     },
-    order_id : {
-        type : Sequelize.STRING,
+    uuid : {
+        type : Sequelize.STRING
     },
-    payment_id : {
-        type : Sequelize.STRING,
-    },
-    status : {
-        type : Sequelize.STRING,
-    },
+    isActive : {
+        type: Sequelize.BOOLEAN
+    }
 });
 
-module.exports = Order;
+module.exports = ForgetPasswordRequest;
