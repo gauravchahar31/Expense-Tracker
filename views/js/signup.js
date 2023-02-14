@@ -38,9 +38,9 @@ function userCreationSuccess(message){
 async function createUser(myform){
     try{
         const UserData = {
-            userName : myform.userName.value,
-            userEmail : myform.userEmail.value,
-            userPassword : myform.userPassword.value,
+            name : myform.userName.value,
+            email : myform.userEmail.value,
+            password : myform.userPassword.value,
         }
         axios.post('/user/signup', UserData)
             .then(result => {

@@ -2,6 +2,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     try{
         axios.get('/expense/getExpense/')
         .then(res => {
+            console.log(res.data);
             checkPremium(res.data.isPremium);
             arrayOfLists = res.data.expenses;
             pagination(res.data.totalExpenses, 10);
@@ -206,8 +207,8 @@ async function showLeaderboard(){
             else{
                 th.innerHTML = leaderBoardCounter++;
             }
-            tdName.innerHTML = ranker.name;
-            tdExpense.innerHTML = ranker.total_cost;
+            tdName.innerHTML = ranker._id;
+            tdExpense.innerHTML = ranker.total;
 
             tbody.appendChild(tr);
             tr.appendChild(th);
@@ -307,7 +308,7 @@ function addExpenseToList(expense){
         const rowDelete = document.createElement('td');
         rowAmount.setAttribute('scope', 'row');
 
-        rowDate.innerHTML = expense.createdAt.split('T')[0];
+        // rowDate.innerHTML = expense.createdAt.split('T')[0];
         rowAmount.innerHTML = expense.amount;
         rowDescription.innerHTML = expense.description;
         rowCategory.innerHTML = expense.category;
@@ -334,7 +335,7 @@ function addExpenseToList(expense){
 
         deleteButton.addEventListener('click', (e) => {
             e.preventDefault();
-            deleteExpense(expense.id);
+            deleteExpense(expense._id);
             tableBody.removeChild(tableRow);
         })
 
@@ -342,7 +343,7 @@ function addExpenseToList(expense){
             document.querySelector('#newAmount').value = expense.amount;
             document.querySelector('#newDescription').value = expense.description;
             document.querySelector('#newCategory').value = expense.category;
-            document.querySelector('#id').value = expense.id;
+            document.querySelector('#id').value = expense._id;
             document.querySelector('#editForm').setAttribute("onsubmit", `editExpense(this, event)`);
         });
     }
@@ -372,47 +373,4 @@ document.getElementById('dailyReport').addEventListener('click', async () => {
     catch(err){
         console.log(err);
     }
-})
-
-document.getElementById('monthlyReport').addEventListener('click', async () => {
-    try{
-        const report = await axios.get('/expense/monthlyExpense');
-        if(report.data == ''){
-            document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
-            setTimeout(() => {
-                document.querySelector('#subscribeMessage').innerHTML = '';
-            }, 5000);
-        }else{
-            var a = document.createElement("a");
-            a.href = report.data;
-            a.download = 'myexpense.csv';
-            a.click();
-        }
-    }
-    catch(err){
-        console.log(err);
-    }
-})
-
-document.getElementById('yearlyReport').addEventListener('click', async () => {
-    try{
-        const report = await axios.get('/expense/yearlyExpense');
-        if(report.data == ''){
-            document.querySelector('#subscribeMessage').innerHTML = 'Buy Premium Subscription to access thdi feature!'
-            setTimeout(() => {
-                document.querySelector('#subscribeMessage').innerHTML = '';
-            }, 5000);
-        }else{
-            var a = document.createElement("a");
-            a.href = report.data;
-            a.download = 'myexpense.csv';
-            a.click();
-        }
-    }
-    catch(err){
-        console.log(err);
-    }
-})
-
-
-//test jenkins
+});

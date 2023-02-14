@@ -11,22 +11,14 @@ exports.getExpenses = async (req, res) => {
                 size : 10
             }
         }
-        console.log(req.query);
-        const expenses = await req.user.getExpenses({
-            offset : ((parseInt(req.query.page)-1) * parseInt(req.query.size)),
-            limit: parseInt(req.query.size),
-            order: [['createdAt', 'DESC']]
-        });
-        const totalExpenses = await req.user.getExpenses({
-            attributes: [
-                [sequelize.fn('COUNT', sequelize.col('id')), 'TOTAL_EXPENSES'],
-            ]
-        });
-        const isPremium = req.user.dataValues.isPremium
+        console.log(req.user);
+        const expenses = await Expense.find({user: req.user}).skip((parseInt(req.query.page)-1) * parseInt(req.query.size)).limit(parseInt(req.query.size)).sort({amount: -1});
+        const totalExpenses = await Expense.find({user: req.user}).count();
+        const isPremium = req.user.isPremium;
         const data = {
             isPremium : isPremium,
             expenses : expenses,
-            totalExpenses : totalExpenses[0].dataValues.TOTAL_EXPENSES
+            totalExpenses : totalExpenses
         }
         res.status(200).json(data);
     }
@@ -38,18 +30,14 @@ exports.getExpenses = async (req, res) => {
 
 exports.postExpense = async (req, res) => {
     try{
-        await req.user.createExpense({
+        const newExpense = new Expense({
             amount : req.body.amount,
             description : req.body.description,
-            category : req.body.category
-        })
-        .then(result => {
-            res.json(result);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(200).json(err.response);
-        })
+            category : req.body.category,
+            user : req.user._id
+        });
+        const expense = await newExpense.save();
+        res.status(200).send(expense);
     }
     catch(err){
         console.log(err);
@@ -59,16 +47,8 @@ exports.postExpense = async (req, res) => {
 
 exports.deleteExpense = async (req, res) => {
     try{
-        await Expense.destroy({ where : {
-            id : req.params.id
-        }})
-        .then(result => {
-            res.json(result);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(200).json(err.response);
-        })
+        await Expense.findByIdAndDelete(req.params.id);
+        res.status(200).json(true);
     }
     catch(err){
         console.log(err);
@@ -78,20 +58,12 @@ exports.deleteExpense = async (req, res) => {
 
 exports.editExpense = async (req, res) =>{
     try{
-        await Expense.update({
+        await Expense.findByIdAndUpdate(req.params.id, {
             amount : req.body.amount,
             description : req.body.description,
             category : req.body.category
-        }, { where : {
-            id : req.params.id
-        }})
-        .then(result => {
-            res.json(result);
         })
-        .catch(err => {
-            console.log(err);
-            res.status(200).json(err.response);
-        })
+        res.status(200).json(true);
     }
     catch(err){
         console.log(err);
@@ -101,14 +73,10 @@ exports.editExpense = async (req, res) =>{
 
 exports.dailyExpense = async (req, res) => {
     try{
-        if(req.user.isPremium == null){
+        if(req.user.isPremium == false){
             res.send(null);
         }else{
-            const expenses = await req.user.getExpenses({
-                attributes: ['amount', 'description', 'category',
-                [sequelize.fn('DATE', sequelize.col('createdAt')), 'Date']
-                ]
-            });
+            const expenses = await Expense.find({user: req.user._id});
             const data = JSON.stringify(expenses);
             const fileName = `expense${req.user.id}${new Date()}`;
             const fileURL = await saveFileToS3(data, fileName);
@@ -121,35 +89,23 @@ exports.dailyExpense = async (req, res) => {
     }
 }
 
-exports.monthlyExpense = async (req, res) => {
-    try{
-        // if(req.user.isPremium == null){
-        //     res.send(null);
-        // }else{
-        //     const expenses = await req.user.getExpenses({
-        //         attributes: [[sequelize.fn('sum', sequelize.col('expenses.amount')), 'Expense Amount'],
-        //         [sequelize.fn('MONTH', sequelize.col('createdAt')), 'MONTH']
-        //         ]
-        //     });
-        //     const data = JSON.stringify(expenses);
-        //     const fileName = `expense${req.user.id}${new Date()}`;
-        //     const fileURL = await saveFileToS3(data, fileName);
-        //     res.send(fileURL);
-        // }
-    }
-    catch(err){
-        console.log(err);
-    }
-}
+// exports.monthlyExpense = async (req, res) => {
+//     try{
 
-exports.yearlyExpense = async (req, res) => {
-    try{
+//     }
+//     catch(err){
+//         console.log(err);
+//     }
+// }
+
+// exports.yearlyExpense = async (req, res) => {
+//     try{
         
-    }
-    catch(err){
-        console.log(err);
-    }
-}
+//     }
+//     catch(err){
+//         console.log(err);
+//     }
+// }
 
 const saveFileToS3 = async (data, fileName) => {
     try{

@@ -7,7 +7,5 @@ router.get('/', homeController.homePage);
 router.get('/login', homeController.loginPage);
 router.get('/signup', homeController.signupPage);
 router.get('/logout', homeController.logout);
-router.get('/forgotPassword', homeController.forgotPassword);
-router.get('/resetPassword/:uuid', homeController.resetPassword);
 
 module.exports = router;

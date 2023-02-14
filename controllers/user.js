@@ -1,33 +1,18 @@
-const path = require('path');
-const sequelize = require('../database/connection');
 const User = require('../models/User');
-const ForgetPasswordRequest = require('../models/ForgetPasswordRequest');
 const passwordEncryption = require('../util/encryptPassword');
-const jwtToken = require('../util/jwtToken');
-const mailSystem = require('../util/mails');
-const {v4 : uuidv4} = require('uuid');
-const rootDir = path.dirname(require.main.filename);
 
 exports.createNewUser = async (req, res) => {
     try{
-        const user = await User.findOne({
-            where : {
-                email : req.body.userEmail
-            }
-        });
+        const user = await User.findOne({email : req.body.email});
         if(!user){
-            const jwt = await jwtToken.createToken(req.body.userEmail);
-            req.body.userPassword = await passwordEncryption.encryptPassword(req.body.userPassword);
-            User.create({
-                name: req.body.userName,
-                email: req.body.userEmail,
-                password: req.body.userPassword,
-                jwt : jwt
-            }).then(result => {
-                res.send('User Created, Please Login')
-            }).catch(err => {
-                res.send('Something went wrong!')
-            }); 
+            const newUser = new User({
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password,
+                isActive: false
+            });
+            await newUser.save();
+            res.status(200).send('Account Created! Please Login')
         }else{
             res.status(200).send('Email Already Exists!')
         }
@@ -38,34 +23,11 @@ exports.createNewUser = async (req, res) => {
     }
 }
 
-exports.checkUser = async (req, res) => {
-    try{
-        const user = await(User.findOne({
-            where : {
-                email : req.body.userEmail
-            }
-        }));
-        if(user){
-            res.status(200).send(true);
-        }else{
-            res.status(200).send(false);
-        }
-    }
-    catch(err){
-        console.log(err);
-        res.status(400).json(null);
-    }
-}
-
 exports.authenicateUser = async (req, res) => {
     try{
-        const user = await User.findOne({
-            where : {
-                email : req.body.userEmail
-            }
-        });
+        const user = await User.findOne({email : req.body.email});
         if(user){
-            if(await passwordEncryption.decryptPassword(req.body.userPassword, user.password)){
+            if(await passwordEncryption.decryptPassword(req.body.password, user.password)){
                 res.cookie('user', user.jwt);
                 res.status(200).send('Account Verified!, Moving to Home Page')
             }else{
@@ -81,74 +43,10 @@ exports.authenicateUser = async (req, res) => {
     }
 }
 
-exports.forgotPassword = async (req, res) => {
-    try{
-        const uuid = uuidv4();
-        const user = await User.findOne({
-            where : {
-                email : req.body.userEmail
-            }
-        });
-    
-        await user.createForgetPasswordRequest({
-            uuid : uuid,
-            isActive : true
-        });
-
-        const mailResponse = await mailSystem.sendResetMail(req.body.userEmail, uuid);
-        res.status(200).send(mailResponse);
-
-    }
-    catch(err){
-        console.log(err);
-        res.status(400).json(null);
-    }
-}
-
-exports.resetPassword = async (req, res) => {
-    try{
-        if(!req.cookies.uuid){
-            res.send(false);
-        }
-        else{
-            const uuidTable = await ForgetPasswordRequest.findOne({
-                where : {
-                    uuid : req.cookies.uuid
-                }
-            })
-            await uuidTable.update({
-                isActive : false
-            })
-            req.body.newPassword = await passwordEncryption.encryptPassword(req.body.newPassword);
-            const changePassword = await User.update({
-                password : req.body.newPassword
-            }, {
-                where : {
-                    id : uuidTable.dataValues.UserId
-                }
-            }).then(result => {
-                return true;
-            }).catch(err => {
-                return false;
-            })
-            res.cookies('uuid', null);
-            res.status(200).send(changePassword);
-        }
-    }
-    catch(err){
-        console.log(err);
-        res.status(400).json(null);
-    }
-}
-
 exports.checkPremium = async (req, res) => {
     try{
-        const user = await User.findOne({
-        where : {
-            jwt : req.cookies.user
-        }
-        });
-        res.status(200).send(user.dataValues.isPremium);
+        const isPremium = req.user.isPremium;
+        res.status(200).send(isPremium);
     }
     catch(err){
         console.log(err);

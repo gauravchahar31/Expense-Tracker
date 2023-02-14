@@ -12,7 +12,7 @@ exports.createToken = async (userData) =>{
 
 exports.verifyToken = async (userToken) =>{
     try{
-        return jwt.sign(userToken, process.env.JWT_SK)
+        return jwt.verify(userToken, process.env.JWT_SK)
     }
     catch(err){
         console.log("JWT Generation Error : " + err)

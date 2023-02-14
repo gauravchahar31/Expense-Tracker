@@ -19,7 +19,7 @@ function validateForm(myform, event){
 //Request to authenticate user
 async function authenticateUser(email, password){
     try{
-        await axios.post('/user/login', {userEmail : email.value, userPassword : password.value})
+        await axios.post('/user/login', {email : email.value, password : password.value})
         .then(result => authenticationSuccess(result.data))
         .catch(err => authenticationSuccess(err.response.data));
     }

@@ -1,32 +1,45 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../database/connection');
+const mongoose = require('mongoose')
+const encryption = require('../util/encryptPassword')
+const jwt = require('../util/jwtToken');
 
-const User = sequelize.define('User', {
-    id : {
-        type : Sequelize.INTEGER,
-        primaryKey : true,
-        autoIncrement : true,
-        allowNul : false
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
-    name : {
-        type : Sequelize.STRING,
-        allowNul : false
+    email: {
+        type: String,
+        required: true,
+        unique : true
     },
-    email : {
-        type : Sequelize.STRING,
-        unique : true,
-        allowNul : false
+    password: {
+        type: String,
+        required: true
     },
-    password : {
-        type : Sequelize.STRING,
-        allowNul : false
+    jwt: {
+        type: String,
+        required: true
     },
-    jwt : {
-        type: Sequelize.STRING,
-    },
-    isPremium : {
-        type: Sequelize.BOOLEAN
+    isPremium:{
+        type: Boolean,
+        required: true
     }
-});
+})
 
-module.exports = User;
+userSchema.pre("validate", async function (next){
+    this.isPremium = false;
+    this.jwt = await jwt.createToken(this.email)
+    next()
+})
+
+userSchema.pre("save", async function (next){
+    if(this.isModified('password')){
+        const encryptedPassword = await encryption.encryptPassword(this.password);
+        this.password = encryptedPassword
+    }
+    next()
+})
+
+const Users = new mongoose.model("User", userSchema)
+
+module.exports = Users
