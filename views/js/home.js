@@ -185,34 +185,36 @@ async function showLeaderboard(){
                         </tr>`;
         let leaderBoardCounter = 1;
         rankers.data.forEach( ranker => {
-            const tr = document.createElement('tr');
-            const th = document.createElement('th');
-            const tdName = document.createElement('td');
-            const tdExpense = document.createElement('td');
-            th.setAttribute('scope', 'row');
+            if(leaderBoardCounter <= 5){
+                const tr = document.createElement('tr');
+                const th = document.createElement('th');
+                const tdName = document.createElement('td');
+                const tdExpense = document.createElement('td');
+                th.setAttribute('scope', 'row');
 
-            if(leaderBoardCounter === 1){
-                th.innerHTML = '🥇';
-                leaderBoardCounter++;
-            }
-            else if(leaderBoardCounter === 2){
-                th.innerHTML = '🥈';
-                leaderBoardCounter++;
-            }
-            else if(leaderBoardCounter === 3){
-                th.innerHTML = '🥉';
-                leaderBoardCounter++;
-            }
-            else{
-                th.innerHTML = leaderBoardCounter++;
-            }
-            tdName.innerHTML = ranker.name;
-            tdExpense.innerHTML = ranker.total_cost;
+                if(leaderBoardCounter === 1){
+                    th.innerHTML = '🥇';
+                    leaderBoardCounter++;
+                }
+                else if(leaderBoardCounter === 2){
+                    th.innerHTML = '🥈';
+                    leaderBoardCounter++;
+                }
+                else if(leaderBoardCounter === 3){
+                    th.innerHTML = '🥉';
+                    leaderBoardCounter++;
+                }
+                else{
+                    th.innerHTML = leaderBoardCounter++;
+                }
+                tdName.innerHTML = ranker.name;
+                tdExpense.innerHTML = ranker.total_cost;
 
-            tbody.appendChild(tr);
-            tr.appendChild(th);
-            tr.appendChild(tdName);
-            tr.appendChild(tdExpense);
+                tbody.appendChild(tr);
+                tr.appendChild(th);
+                tr.appendChild(tdName);
+                tr.appendChild(tdExpense);
+            }
         })
     }
     catch(err){

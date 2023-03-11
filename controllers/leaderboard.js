@@ -13,7 +13,6 @@ exports.getLeaderboard = async (req, res) => {
                 }
             ],
             group:['User.id'],
-            limit: 5,
             order:[['total_cost', 'DESC']]
         })
         res.status(200).json(leaderboard);
